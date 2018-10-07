@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="tracManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    </bean>
+
+    <bean id="datasourcePool" abstract="true" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    </bean>
+
+    <bean id="dataSource" parent="datasourcePool">
+        <property name="driver" value="${spring.datasource.driver-class-name}"></property>
+        <property name="username" value="${spring.datasource.data-username}"></property>
+        <property name="password" value="${spring.datasource.data-password}"></property>
+        <property name="url" value="${spring.datasource.url}"></property>
+    </bean>
+
+    <!--tx:导入命名空间-->
+    <tx:advice id="txAdvice" transaction-manager="tracManager">
+        <tx:attributes>
+            <tx:method name="add*" propagation="REQUIRED"/>
+            <tx:method name="update*" propagation="REQUIRES_NEW"></tx:method>
+            <!--read-only 表示只支持读操作，但是不是所有的数据库都支持。mysql是支持的，但是oracle不支持-->
+            <tx:method name="get*" read-only="true"></tx:method>
+        </tx:attributes>
+    </tx:advice>
+
+    <aop:config>
+        <aop:pointcut id="txPoincut" expression="execution(* com.example.springtrac.service.*.*(..))"></aop:pointcut>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPoincut"></aop:advisor>
+    </aop:config>
+</beans>
