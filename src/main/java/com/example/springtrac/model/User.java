@@ -8,5 +8,5 @@ import java.math.BigDecimal;
 public class User {
     private Integer id;
     private String name;
-    private BigDecimal amount;
+    private BigDecimal amout;
 }
