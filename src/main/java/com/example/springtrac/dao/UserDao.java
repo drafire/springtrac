@@ -16,7 +16,7 @@ public class UserDao {
 
     private JdbcTemplate jdbcTemplate;
 
-    @Resource(name = "dataSource")
+    //@Resource(name = "dataSource")
     public void setJdbcTemplate(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
